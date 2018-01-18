@@ -1,11 +1,10 @@
 # cryptocurrency status alarm
 import time
-import argparse
 import math
-
-import RPi.GPIO as GPIO
 import signal
 import os
+
+import RPi.GPIO as GPIO
 
 pin_green = 23
 pin_red = 24
@@ -20,6 +19,16 @@ def init_led():
 def deinit_led():
     GPIO.output(pin_green, False)
     GPIO.output(pin_red, False)
+    exit(0)
+
+def blink(pin, patterns):
+    if patterns is None:
+        return
+    for pattern in patterns:
+        length = pattern['length']
+        status = pattern['status']
+        GPIO.output(pin, status)
+        time.sleep(length)
 
 sounds_path = './sounds/'
 sounds = {
@@ -42,10 +51,21 @@ sounds = {
 def play_sound(file_name, file_dir='voices'):
     os.system('mpg123 -q ' + os.path.join(file_dir, file_name) + ' &')
 
-def speak_price(price):
+def speak_price(currency, price):
     price = int(price)
     price_str = str(price)
     num_digits = len(price_str)
+
+    blink_pattern = [
+            {'status': True, 'length': 0.2}
+            {'status': False, 'length': 0.2}
+            {'status': True, 'length': 0.2}]
+    blink(pin_green, blink_pattern)
+
+    play_sound("prefix.mp3", file_dir="numbers")
+    time.sleep(0.2)
+    play_sound(sounds[currency] + ".mp3")
+    time.sleep(0.8)
 
     for i, digit_str in enumerate(price_str):
         digit = int(digit_str)
@@ -74,9 +94,20 @@ def speak_price(price):
     time.sleep(0.6)
 
 def main():
+    signal.signal(signal.SIGINT, deinit)
     init_led()
-    speak_price(23914567)
-    speak_price(23000000)
+    while(True):
+        cmd = input("command $> ").split(" ")
+        if cmd[0] == "help":
+            print("help")
+            print("speak [price]")
+            print("blink [pin]")
+            print("exit")
+        elif cmd[0] == "speak":
+            speak_price(int(cmd[1]))
+        elif cmd[0] == "exit":
+            deinit_led()
+            return
 
 if __name__ == '__main__':
     main()
