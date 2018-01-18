@@ -93,6 +93,26 @@ def speak_price(currency, price):
     play_sound('won.mp3', file_dir="numbers")
     time.sleep(0.6)
 
+def alarm(currency, sign, level):
+    if cmd[2] == 'p':
+        message = "pos" + str(level) 
+        pin_blink = pin_green
+    else:
+        message = "neg" + str(level)
+        pin_blink = pin_red
+
+    blink_pattern = [
+            {'status': True, 'length': 0.1},
+            {'status': False, 'length': 0.1},
+            {'status': True, 'length': 0.1},
+            {'status': True, 'length': 0.35}]
+    blink(pin_blink, blink_pattern)
+
+    play_sound(sounds[currency])
+    time.sleep(0.8)
+    play_sound(message)
+    time.sleep(3)
+
 def main():
     #signal.signal(signal.SIGINT, deinit_led)
     init_led()
@@ -101,13 +121,18 @@ def main():
         if cmd[0] == "help":
             print("help")
             print("speak [currency] [price]")
-            print("blink [pin]")
+            print("alarm [currency] [sign] [level]")
             print("exit")
         elif cmd[0] == "speak":
             if len(cmd) < 3:
-                print("speak [currency] [price]")
+                print("speak [currency] [price(num)]")
             else:
                 speak_price(cmd[1], int(cmd[2]))
+        elif cmd[0] == "alarm":
+            if len(cmd) < 4:
+                print("alarm [currency] [sign(p/n)] [level(num)]")
+            else:
+                alarm(cmd[1], cmd[2], int(cmd[3]))
         elif cmd[0] == "exit":
             deinit_led()
             return
