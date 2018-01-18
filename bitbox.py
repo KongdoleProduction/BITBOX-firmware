@@ -51,17 +51,17 @@ def speak_price(price):
         if place_value >= 10000:
             temp = int(value / 10000)
             if temp != 0:
-                play_sound(str(temp) + '.wav')
+                play_sound(str(temp) + '.wav', file_dir="numbers")
                 time.sleep(0.7)
 
             if price_value == 10000 and value == 0:
-                play_sound('10000.wav')
+                play_sound('10000.wav', file_dir="numbers")
         else:
             if value != 0:
-                play_sound(str(value) + '.wav')
+                play_sound(str(value) + '.wav', file_dir="numbers")
                 time.sleep(0.7)
 
-    play_sound('won.wav')
+    play_sound('won.wav', file_dir="numbers")
     time.sleep(0.7)
 
 def main():
