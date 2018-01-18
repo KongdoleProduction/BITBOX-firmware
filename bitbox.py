@@ -1,6 +1,7 @@
 # cryptocurrency status alarm
 import time
 import argparse
+import math
 
 import RPi.GPIO as GPIO
 import signal
@@ -10,6 +11,9 @@ pin_green = 23
 pin_red = 24
 
 def init_led():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin_green, GPIO.OUT)
+    GPIO.setup(pin_red, GPIO.OUT)
     GPIO.output(pin_green, False)
     GPIO.output(pin_red, False)
 
@@ -48,25 +52,31 @@ def speak_price(price):
         place_value = int(math.pow(10, num_digits - i - 1))
         value = digit * place_value
 
-        if place_value >= 10000:
+        if place_value >= 100000:
             temp = int(value / 10000)
             if temp != 0:
-                play_sound(str(temp) + '.wav', file_dir="numbers")
-                time.sleep(0.7)
+                play_sound(str(temp) + '.mp3', file_dir="numbers")
+                time.sleep(0.6)
 
-            if price_value == 10000 and value == 0:
-                play_sound('10000.wav', file_dir="numbers")
+        elif place_value == 10000:
+            if digit == 0:
+		play_sound('10000p.mp3', file_dir="numbers")
+                time.sleep(0.5)
+            else:
+		play_sound(str(value) + '.mp3', file_dir="numbers")
+                time.sleep(0.6)
         else:
             if value != 0:
-                play_sound(str(value) + '.wav', file_dir="numbers")
-                time.sleep(0.7)
+                play_sound(str(value) + '.mp3', file_dir="numbers")
+                time.sleep(0.6)
 
-    play_sound('won.wav', file_dir="numbers")
-    time.sleep(0.7)
+    play_sound('won.mp3', file_dir="numbers")
+    time.sleep(0.6)
 
 def main():
     init_led()
-    speak_price(23934567)
+    speak_price(23914567)
+    speak_price(23000000)
 
 if __name__ == '__main__':
     main()
