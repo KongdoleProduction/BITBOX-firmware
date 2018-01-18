@@ -94,7 +94,7 @@ def speak_price(currency, price):
     time.sleep(0.6)
 
 def alarm(currency, sign, level):
-    if cmd[2] == 'p':
+    if sign == 'p':
         message = "pos" + str(level) 
         pin_blink = pin_green
     else:
@@ -110,7 +110,7 @@ def alarm(currency, sign, level):
 
     play_sound(sounds[currency])
     time.sleep(0.8)
-    play_sound(message)
+    play_sound(sounds[message])
     time.sleep(3)
 
 def main():
