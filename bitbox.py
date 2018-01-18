@@ -57,14 +57,14 @@ def speak_price(currency, price):
     num_digits = len(price_str)
 
     blink_pattern = [
-            {'status': True, 'length': 0.2}
-            {'status': False, 'length': 0.2}
+            {'status': True, 'length': 0.2},
+            {'status': False, 'length': 0.2},
             {'status': True, 'length': 0.2}]
     blink(pin_green, blink_pattern)
 
     play_sound("prefix.mp3", file_dir="numbers")
     time.sleep(0.2)
-    play_sound(sounds[currency] + ".mp3")
+    play_sound(sounds[currency])
     time.sleep(0.8)
 
     for i, digit_str in enumerate(price_str):
@@ -94,17 +94,20 @@ def speak_price(currency, price):
     time.sleep(0.6)
 
 def main():
-    signal.signal(signal.SIGINT, deinit)
+    #signal.signal(signal.SIGINT, deinit_led)
     init_led()
     while(True):
-        cmd = input("command $> ").split(" ")
+        cmd = raw_input("command $> ").split(" ")
         if cmd[0] == "help":
             print("help")
-            print("speak [price]")
+            print("speak [currency] [price]")
             print("blink [pin]")
             print("exit")
         elif cmd[0] == "speak":
-            speak_price(int(cmd[1]))
+            if len(cmd) < 3:
+                print("speak [currency] [price]")
+            else:
+                speak_price(cmd[1], int(cmd[2]))
         elif cmd[0] == "exit":
             deinit_led()
             return
